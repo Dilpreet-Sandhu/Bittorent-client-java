@@ -1,15 +1,12 @@
 package com.bittorrent;
 
-/**
- * Hello world!
- *
- */
+
+import com.bencode.Parser;
+
 public class App 
 {
-    public static void main( String[] args )
+    public static void main( String[] args)
     {
-
-        System.err.println("hello world");
 
 
     }
