@@ -1,78 +1,74 @@
 package com.bencode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class Parser {
 
-    private static int parseInteger(String input,Integer i) throws IllegalArgumentException {
+    private static long parseInteger(byte[] input,int[] i) throws IllegalArgumentException {
 
-        int num = 0;
+        long num = 0;
 
-        while (i < input.length() && input.charAt(i) != 'e') {
+        while (i[0] < input.length && input[i[0]] != 'e') {
 
-            int c = input.charAt(i) - '0';
+            int c = input[i[0]] - '0';
 
             num = (num * 10) + c;
 
-            i++;
+            i[0]++;
 
         }
 
-        if (i == input.length()) throw new IllegalArgumentException("reached end of string while parsing an integer");
+        if (i[0] == input.length) throw new IllegalArgumentException("reached end of string while parsing an integer");
+
+        i[0]++;
 
         return num;
 
     }
 
-    private static String parseString(String input,Integer i) throws IllegalArgumentException{
+    private static byte[] parseString(byte[] input,int[] i) throws IllegalArgumentException{
 
         int len = 0;
-        while (i < input.length() && input.charAt(i) != ':') {
+        while (i[0] < input.length && input[i[0]] != ':') {
 
-            int c = input.charAt(i) - '0';
+            int c = input[i[0]] - '0';
 
             len = (len * 10) + c;
 
-            i++;
+            i[0]++;
             
         }
 
-        if (i >= input.length()) throw new IllegalArgumentException("reached end of string while parsing string");
+        if (i[0] >= input.length) throw new IllegalArgumentException("reached end of string while parsing string");
 
-        i++;
-        if (i >= input.length()) throw new IllegalArgumentException("reached end of string while parsing string");
+        i[0]++;
+        if (i[0] >= input.length) throw new IllegalArgumentException("reached end of string while parsing string");
 
 
-        StringBuilder sb = new StringBuilder();
-
+        byte[] res = new byte[len];
        for (int j = 0;j < len;j++) {
 
-         if (i >= input.length()) throw new IllegalArgumentException("reached end of string while parsing string");
+         if (i[0] >= input.length) throw new IllegalArgumentException("reached end of string while parsing string");
 
+            res[j] = input[i[0]];
 
-            sb.append(input.charAt(i));
-
-            i++;
+            i[0]++;
 
         
        } 
 
-
-       return sb.toString();
-        
+       return res; 
 
     }
 
-    public static Object parse(String input,Integer i) throws IllegalArgumentException {
+    public static Object parse(byte[] input,int[] i) throws IllegalArgumentException {
 
-        char c = input.charAt(i);
+        byte c = input[i[0]];
 
 
         if (c == 'i') {
-            i++;
+            i[0]++;
             return parseInteger(input,i);
         }
 
@@ -85,15 +81,15 @@ public class Parser {
         if (c == 'l') {
 
             List<Object> l = new ArrayList<>();
-
-            while (i < input.length() && input.charAt(i) != 'e') {
+            i[0]++;
+            while (i[0] < input.length && input[i[0]] != 'e') {
 
                 l.add(parse(input,i));
 
             }
 
-            if (i >= input.length()) throw new IllegalArgumentException("reached end of string while parsing a list");
-            
+            if (i[0] >= input.length) throw new IllegalArgumentException("reached end of string while parsing a list");
+            i[0]++;
 
             return l;
 
@@ -102,19 +98,20 @@ public class Parser {
 
         if (c == 'd') {
 
-            Map<Object,Object> map = new HashMap<>();
+            Map<String,Object> map = new HashMap<>();
+            i[0]++;
+            while (i[0] < input.length && input[i[0]] != 'e') {
 
-            while (i < input.length() && input.charAt(i) != 'e') {
-
-                Object key = parse(input,i);
+                String key = new String(parseString(input,i),StandardCharsets.UTF_8);
                 Object val = parse(input,i);
+
 
                 map.put(key,val);
 
             }
 
-            if (i >= input.length()) throw new IllegalArgumentException("reached end of string while parsing a dictionary");
-
+            if (i[0] >= input.length) throw new IllegalArgumentException("reached end of string while parsing a dictionary");
+            i[0]++;
             return map;
 
         }
