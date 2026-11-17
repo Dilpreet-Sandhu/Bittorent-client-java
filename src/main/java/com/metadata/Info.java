@@ -2,6 +2,8 @@ package com.metadata;
 import java.util.List;
 import java.util.Map;
 
+import com.Helper.Helper;
+
 public class Info {
 
     private byte[] name;

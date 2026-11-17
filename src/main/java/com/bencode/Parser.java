@@ -3,6 +3,8 @@ package com.bencode;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import com.Helper.Helper;
+import com.bittorrent.App;
 public class Parser {
 
     private static long parseInteger(byte[] input,int[] i) throws IllegalArgumentException {
@@ -102,9 +104,15 @@ public class Parser {
             i[0]++;
             while (i[0] < input.length && input[i[0]] != 'e') {
 
-                String key = new String(parseString(input,i),StandardCharsets.UTF_8);
+                String key = new String(parseString(input,i),StandardCharsets.UTF_8); 
+                int start = i[0];                
                 Object val = parse(input,i);
-
+                
+                if (key.equals("info")) {
+                    int end = i[0];
+                    byte[] bytes = Arrays.copyOfRange(input,start,end);
+                    App.setRawInfoBytes(bytes);
+                }
 
                 map.put(key,val);
 
