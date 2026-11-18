@@ -70,6 +70,7 @@ public class TrackerHandler {
         byte[] trackerResponse = requestToAnnounce(url, infoHash, peerId, port, uploaded, downloaded, left, event);
 
         Object parsedResponse = Parser.parse(trackerResponse, new int[] { 0 });
+        System.out.println(parsedResponse);
         TrackerResponse response = decodeResponse(parsedResponse);
 
 

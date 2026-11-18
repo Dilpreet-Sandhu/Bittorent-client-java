@@ -11,18 +11,24 @@ public class TrackerResponse {
     private final List<PeerData> peers;
     private final long incomplete;
     private final long complete;
+    private final Long minInterval;
+    private final byte[] trackerId;
 
 
     TrackerResponse(
         long interval,
         List<PeerData> peers,
         long incomplete,
-        long complete
+        long complete,
+        Long minInterval,
+        byte[] trackerId
     ) {
         this.interval = interval;
         this.peers = peers;
         this.incomplete = incomplete;
         this.complete = complete;
+        this.minInterval = minInterval;
+        this.trackerId = trackerId;
     }
 
     public static TrackerResponse decode(
@@ -36,6 +42,8 @@ public class TrackerResponse {
             long dInterval = (long) t.get("interval");
             long incomplete = (long) t.get("incomplete");
             long complete = (long) t.get("complete");
+            Long minInterval = t.containsKey("min interval") ? (Long) t.get("min interval") : null;
+            byte[] trackerId = (byte[]) t.get("tracker id");
             Object dPeers = t.get("peers");
 
             Helper.nullCheck(dInterval, "interval in tracker response");
@@ -43,7 +51,7 @@ public class TrackerResponse {
 
             List<PeerData> lPeers = PeerData.getPeers(dPeers);
 
-            return new TrackerResponse(dInterval, lPeers,incomplete,complete);
+            return new TrackerResponse(dInterval, lPeers,incomplete,complete,minInterval,trackerId);
 
 
         }else {
@@ -56,6 +64,18 @@ public class TrackerResponse {
     }
     public List<PeerData> getPeers() {
         return peers;
+    }
+    public long getIncomple() {
+        return incomplete;
+    }
+    public long complete() {
+        return complete;
+    }
+    public byte[] getTrackerId() {
+        return trackerId;
+    }
+    public Long getMinInterval() {
+        return minInterval;
     }
     
 }

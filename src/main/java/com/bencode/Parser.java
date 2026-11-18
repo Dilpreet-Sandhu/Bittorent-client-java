@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.Helper.Helper;
 import com.bittorrent.App;
+import com.bittorrent.Bittorrent;
 public class Parser {
 
     private static long parseInteger(byte[] input,int[] i) throws IllegalArgumentException {
@@ -111,7 +112,7 @@ public class Parser {
                 if (key.equals("info")) {
                     int end = i[0];
                     byte[] bytes = Arrays.copyOfRange(input,start,end);
-                    App.setRawInfoBytes(bytes);
+                    Bittorrent.setRawInfoBytes(bytes);
                 }
 
                 map.put(key,val);

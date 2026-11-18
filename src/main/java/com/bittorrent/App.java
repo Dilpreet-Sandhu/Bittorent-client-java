@@ -1,73 +1,46 @@
 package com.bittorrent;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HexFormat;
-import java.util.List;
 
-import com.bencode.Parser;
-import com.metadata.TorrentMetaData;
-import com.tracker.TrackerHandler;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+
+import java.util.Scanner;
+
 
 public class App {
 
-    
-     static byte[] rawInfoBytes;
-     static byte[] peerId = new byte[20];
     public static void main(String[] args) throws Exception {
-        
-        try {
-            byte[] input = Files.readAllBytes(Path.of(args[0]));
-   
-    
-            Object res = Parser.parse(input, new int[] {0});
 
-     
-            TorrentMetaData metaData = TorrentMetaData.decodeMetaData(res);
+        Scanner sc = new Scanner(System.in);
 
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        while (true) {
 
-            byte[] infoHash = digest.digest(rawInfoBytes);
+            String s = sc.nextLine();
 
+            if (s.equals("exit"))
+                break;
 
-            SecureRandom random = new SecureRandom();
-            random.nextBytes(peerId);
+            try {
 
-            String trackerUrl = new String(new String(metaData.getAnnounce(),StandardCharsets.UTF_8));
+                Path p = Path.of(s);
 
-            TrackerHandler.handleTracker(
-                trackerUrl,
-                infoHash,
-                peerId,
-                6881,
-                0,
-                0,
-                metaData.getInfo().getLength(),
-                "started"
-            );
+                byte[] bytes = Files.readAllBytes(p);
 
-            TrackerHandler.requestToAnnounce(
-                trackerUrl,
-                infoHash,
-                peerId,
-                6881,
-                0,0,
-                0,
-                "stopped"
-            );
-            
-        }catch(IOException e) {
-            System.out.println(e.toString());
+                Bittorrent.downloadFile(bytes);
+
+            } catch (InvalidPathException e) {
+                System.out.println("path is not valid");
+            } catch (Exception e) {
+
+                System.out.println(e.toString());
+
+            }
+
         }
 
-        
+        sc.close();
+
     }
+
     
-    public static void setRawInfoBytes(byte[] input) {
-        rawInfoBytes = input;
-    }
 }
