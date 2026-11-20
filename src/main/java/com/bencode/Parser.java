@@ -3,8 +3,6 @@ package com.bencode;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import com.Helper.Helper;
-import com.bittorrent.App;
 import com.bittorrent.Bittorrent;
 public class Parser {
 
